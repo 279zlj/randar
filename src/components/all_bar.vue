@@ -11,18 +11,18 @@
                 <span>系统监控</span>
               </template>
               <el-menu-item-group>
-                <el-menu-item index="1-1">系统概述</el-menu-item>
-                <el-menu-item index="1-2">集群状态</el-menu-item>
+                <router-link :to="{name:'system_sketch'}"><el-menu-item index="1-1">系统概述</el-menu-item></router-link>
+                <router-link :to="{name:'cluster_status'}"><el-menu-item index="1-2">集群状态</el-menu-item></router-link>
               </el-menu-item-group>
             </el-submenu>
-            <el-menu-item index="2">
+            <router-link :to="{name:'node_manager'}"><el-menu-item index="2">
               <i class="el-icon-jiedian iconfont"></i>
               <span slot="title">节点管理</span>
-            </el-menu-item>
-            <el-menu-item index="3">
+            </el-menu-item></router-link>
+            <router-link :to="{name:'user'}"><el-menu-item index="3">
               <i class="el-icon-user-s iconfont"></i>
               <span slot="title">用户管理</span>
-            </el-menu-item>
+            </el-menu-item></router-link>
             <el-menu-item index="4">
               <i class="el-icon-setting"></i>
               <span slot="title">系统管理</span>
@@ -51,5 +51,8 @@
   }
   #image{
     width: 4.5em;margin: 1em 0;color: white
+  }
+  a{
+    text-decoration: none;
   }
 </style>

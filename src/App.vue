@@ -12,12 +12,7 @@ export default {
 </script>
 
 <style>
-* {
-  top: 0;
-  bottom: 0;
-  margin:0;
-  padding:0;
-}
+
 html,body{
   margin: 0;
   padding: 0;
@@ -25,5 +20,11 @@ html,body{
 }
 #app{
   height: 100%;
+}
+.bg-color {
+  background: #1A3E67;
+}
+.health{
+  line-height: .5em;
 }
 </style>
