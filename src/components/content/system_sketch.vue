@@ -2,22 +2,24 @@
 
     <el-col :xs="18" :sm="18" :md="18" :lg="20" :xl="20" id="system_sketch">
       <el-row class="bg-color">
-        <el-col :xs="3" :sm="3" :md="3" :lg="3" :xl="3" >
+        <el-col :xs="7" :sm="6" :md="5" :lg="3" :xl="3">
           <p style="text-align: center;color: white;font-size: 1.5em;line-height: .5em">集群利用状况</p>
         </el-col>
         <el-row>
-          <el-col :xs="1" :sm="1" :md="1" :lg="1" :xl="1" :offset="17">
+          <el-col :xs="7" :sm="12" :md="14" :lg="16" :xl="17" style="height: 1em"></el-col>
+          <el-col :xs="2" :sm="1" :md="1" :lg="1" :xl="1" >
             <i class="el-icon-jinggao1 iconfont logo"></i>
           </el-col>
-          <el-col :xs="1" :sm="1" :md="1" :lg="1" :xl="1"   >
+          <el-col :xs="2" :sm="1" :md="1" :lg="1" :xl="1"   >
             <i class="el-icon-weibiaoti1 iconfont logo"></i>
           </el-col>
-          <el-col :xs="1" :sm="1" :md="1" :lg="1" :xl="1"   >
+          <el-col :xs="2" :sm="1" :md="1" :lg="1" :xl="1"   >
             <i class="el-icon-user-s iconfont logo"></i>
           </el-col>
-          <el-col :xs="1" :sm="1" :md="1" :lg="1" :xl="1"   >
+          <el-col :xs="2" :sm="1" :md="1" :lg="1" :xl="1"   >
             <i class="el-icon-tuichu iconfont logo"></i>
           </el-col>
+
         </el-row>
         <el-row>
           <div id="container" style="min-width: 100%; height: 330px; margin: 0 auto;margin-bottom: 1.5em">
@@ -26,17 +28,17 @@
         </el-row>
       </el-row>
       <el-row style="margin-top: -1.5em">
-        <el-col :xs="22" :sm="22" :md="10" :lg="10" :xl="10" :offset="1">
+        <el-col :xs="22" :sm="22" :md="22" :lg="10" :xl="10" :offset="1">
           <el-card class="box-card" shadow="hover">
             <div slot="header" class="clearfix">
               <span>集群健康状态</span>
             </div>
-            <el-col :xs="24" :sm="12" :md="24" :lg="12" :xl="10" style="text-align: center;margin-top: 1.5em">
+            <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="10" style="text-align: center;margin-top: 1.5em">
 
                 <el-progress type="circle" :percentage="100" status="text" :stroke-width=15 color="#67C23A">正常</el-progress>
 
             </el-col>
-            <el-col :xs="24" :sm="12" :md="24" :lg="12" :xl="10" style="border-left: 1px solid darkgrey;padding: 1em;margin-bottom: 1em">
+            <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="10" style="border-left: 1px solid darkgrey;padding: 1em;margin-bottom: 1em">
               <p class="health">集群容量</p>
               <el-progress :text-inside="true" :stroke-width="18" :percentage="40"></el-progress>
               <el-row >
@@ -66,7 +68,7 @@
             </el-col>
           </el-card>
         </el-col>
-        <el-col :xs="22" :sm="22" :md="11" :lg="11" :xl="11" :offset="1">
+        <el-col :xs="22" :sm="22" :md="22" :lg="11" :xl="11" :offset="1">
           <el-card class="box-card" shadow="hover">
             <div>
               <span>警告情况统计</span>
@@ -74,7 +76,7 @@
             <el-col :xs="24" :sm="4" :md="4" :lg="4" :xl="4" >
               <el-card shadow="always" style="background-color: #F56C6C;height: 14em;border-radius: 1em;margin: 1.3em 0">
 
-                <p style="text-align: center;color: #DB5147;font-size: 1.5em;">灾难</p>
+                <p style="color: #DB5147" class="f-size">灾难</p>
                 <p style="text-align: center;color: white;"><span style="font-size: 4em">3</span>个</p>
                 <i class="el-icon-warning" style="color: #EA5F54;font-size: 4.5em"></i>
               </el-card>
@@ -83,7 +85,7 @@
             <el-col :xs="24" :sm="4" :md="4" :lg="4" :xl="4" :offset="1">
               <el-card shadow="always" style="background-color: #E6A23C;height: 14em;border-radius: 1em;margin: 1.3em 0">
 
-                <p style="text-align: center;color: #E77E1B;font-size: 1.5em">严重</p>
+                <p style="color: #E77E1B" class="f-size">严重</p>
                 <p style="text-align: center;color: white;"><span style="font-size: 4em">3</span>个</p>
                 <i class="el-icon-warning" style="color: #E9821E;font-size: 4.5em"></i>
               </el-card>
@@ -92,7 +94,7 @@
             <el-col :xs="24" :sm="4" :md="4" :lg="4" :xl="4" :offset="1">
               <el-card shadow="always" style="background-color: #67C23A;height: 14em;border-radius: 1em;margin: 1.3em 0">
 
-                <p style="text-align: center;color: #86E16E;font-size: 1.5em">一般</p>
+                <p style="color: #86E16E" class="f-size">一般</p>
                 <p style="text-align: center;color: white;"><span style="font-size: 4em">3</span>个</p>
                 <i class="el-icon-warning" style="color: #86E16E;font-size: 4.5em"></i>
               </el-card>
@@ -101,7 +103,7 @@
             <el-col :xs="24" :sm="4" :md="4" :lg="4" :xl="4" :offset="1">
               <el-card shadow="always" style="background-color: #409EFF;height: 14em;border-radius: 1em;margin: 1.3em 0">
 
-                <p style="text-align: center;color: #5BB2E9;font-size: 1.5em">警告</p>
+                <p style="color: #5BB2E9" class="f-size">警告</p>
                 <p style="text-align: center;color: white;"><span style="font-size: 4em">3</span>个</p>
                 <i class="el-icon-warning" style="color: #5BB2E9;font-size: 4.5em"></i>
               </el-card>
@@ -110,7 +112,7 @@
             <el-col :xs="24" :sm="4" :md="4" :lg="4" :xl="4" :offset="1">
               <el-card shadow="always" style="background-color: #409EFF;height: 14em;border-radius: 1em;margin: 1.3em 0">
 
-                <p style="text-align: center;color: #5BB2E9;font-size: 1.5em">信息</p>
+                <p style="color: #5BB2E9" class="f-size">信息</p>
                 <p style="text-align: center;color: white;"><span style="font-size: 4em">3</span>个</p>
                 <i class="el-icon-warning" style="color: #5BB2E9;font-size: 4.5em"></i>
               </el-card>
@@ -269,6 +271,8 @@
   .logo{
     font-size: 1.5em;margin: .5em;color: white;cursor:pointer
   }
-
+  .f-size{
+    text-align: center;font-size: 1.5em;
+  }
 
 </style>

@@ -6,6 +6,7 @@ import system_sketch from '@/components/content/system_sketch'
 import cluster_status from '@/components/content/cluster_status'
 import node_manager from '@/components/node/node_manager'
 import user from '@/components/User/user'
+import system_manager from '@/components/system/system_manager'
 
 Vue.use(Router)
 
@@ -51,6 +52,14 @@ export default new Router({
       components:{
         default:all_bar,
         content:user
+      }
+    },
+    {
+      path:'/system_manager',
+      name:'system_manager',
+      components:{
+        default:all_bar,
+        content:system_manager
       }
     }
   ]

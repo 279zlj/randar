@@ -6,9 +6,11 @@ import router from './router'
 import './assets/js/jquery-3.3.1.min'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+import 'element-ui/lib/theme-chalk/display.css'
 import '@/assets/icon/iconfont.css'
 import * as Highcharts from 'highcharts'
 import axios from 'axios'
+
 
 Vue.config.productionTip = false
 Vue.use(ElementUI)

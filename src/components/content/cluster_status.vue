@@ -2,7 +2,7 @@
     <el-col :xs="18" :sm="18" :md="18" :lg="20" :xl="20" id="cluser_status">
       <top_bar :who=now></top_bar>
       <el-row>
-        <el-col :xs="10" :sm="10" :md="10" :lg="10" :xl="10" :offset="1" style="margin-top: -2em">
+        <el-col :xs="10" :sm="10" :md="22" :lg="10" :xl="10" :offset="1" style="margin-top: -2em">
           <el-card class="box-card" shadow="hover">
             <div slot="header" class="clearfix">
               <span>基本信息</span>
@@ -65,13 +65,13 @@
             </el-row>
           </el-card>
         </el-col>
-        <el-col :xs="11" :sm="11" :md="11" :lg="11" :xl="11" :offset="1" style="margin-top: -2em;">
+        <el-col :xs="11" :sm="11" :md="22" :lg="11" :xl="11" :offset="1" style="margin-top: -2em;">
           <div id="cpu" style="width: 100%;height:250px;border-radius: .3em"></div>
         </el-col>
-        <el-col :xs="11" :sm="11" :md="11" :lg="11" :xl="11" :offset="1" style="margin-top: 1em">
+        <el-col :xs="11" :sm="11" :md="22" :lg="11" :xl="11" :offset="1" style="margin-top: 1em">
           <div id="mom" style="width: 100%;height:250px;border-radius: .3em"></div>
         </el-col>
-        <el-col :xs="11" :sm="11" :md="11" :lg="11" :xl="11" :offset="1" style="margin-top: 1em">
+        <el-col :xs="11" :sm="11" :md="22" :lg="11" :xl="11" :offset="1" style="margin-top: 1em;margin-bottom: 1em">
           <div id="disk" style="width: 100%;height:250px;border-radius: .3em"></div>
         </el-col>
       </el-row>
@@ -278,6 +278,7 @@
 <style scoped>
   #cluser_status{
     height: 100%;
+    overflow-y: scroll;
     background-color: #EBECF1;
   }
   .line{
