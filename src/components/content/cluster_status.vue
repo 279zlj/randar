@@ -1,7 +1,8 @@
 <template>
     <el-col :xs="18" :sm="18" :md="18" :lg="20" :xl="20" id="cluser_status">
-      <top_bar :who=now></top_bar>
+
       <el-row>
+        <top_bar :who=now></top_bar>
         <el-col :xs="10" :sm="10" :md="22" :lg="10" :xl="10" :offset="1" style="margin-top: -2em">
           <el-card class="box-card" shadow="hover">
             <div slot="header" class="clearfix">
@@ -11,58 +12,40 @@
               <div class="line"></div>
             </el-col>
             <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12"  style="text-align: center;margin-bottom: 1em">
-              <el-progress type="circle" :percentage="70" :stroke-width=15 style="margin: 2em 0 1em 0" :width="200" color="#299D83"></el-progress>
-              <p class="health">已用容量：</p>
-              <p class="health">可用容量：</p>
-              <p class="health">总容量：</p>
+              <el-progress type="circle" :percentage="percent" :stroke-width=15 style="margin: 2em 0 1em 0" :width="200" color="#299D83"></el-progress>
+              <p class="health">已用容量：<span>{{usage}}</span></p>
+              <p class="health">可用容量：<span>{{freeuse}}</span></p>
+              <p class="health">总容量：{{alluse}}</p>
             </el-col>
             <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6" >
               <div class="line"></div>
             </el-col>
             <el-row>
                 <el-col :xs="10" :sm="10" :md="10" :lg="10" :xl="10" >
-                  <p class="health"> 集群名称：<span></span></p>
+                  <p class="health"> 集群名称：<span>Radar Bigdata</span></p>
                 </el-col>
               <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6" >
-                <p class="health">FTP：<span></span></p>
+
+                <p class="health">版本：<span>V1.01</span></p>
               </el-col>
               <el-col :xs="8" :sm="8" :md="8" :lg="8" :xl="8" >
-                <p class="health">在线节点数：<span></span></p>
+                <p class="health">在线节点数：<span>{{innum}}</span></p>
               </el-col>
             </el-row>
             <el-row>
               <el-col :xs="10" :sm="10" :md="10" :lg="10" :xl="10"  >
-                <p class="health">节点数量：<span></span></p>
+                <p class="health">节点数量：<span>{{nodenum}}</span></p>
               </el-col>
-              <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6"  >
-                <p class="health">CIFS：<span></span></p>
+
+              <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6">
+                <p class="health">FTP：<span>关</span></p>
               </el-col>
-              <el-col :xs="8" :sm="8" :md="8" :lg="8" :xl="8" >
-                <p class="health">离线节点数：<span></span></p>
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :xs="10" :sm="10" :md="10" :lg="10" :xl="10"  >
-                <p class="health">版本：<span></span></p>
-              </el-col>
-              <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6" >
-                <p class="health">NFS：<span></span></p>
-              </el-col>
-              <el-col :xs="8" :sm="8" :md="8" :lg="8" :xl="8" >
-                <p class="health">共享卷数：<span></span></p>
+              <el-col :xs="8" :sm="8" :md="8" :lg="8" :xl="8"  >
+
+                <p class="health">离线节点数：<span>{{outnum}}</span></p>
               </el-col>
             </el-row>
-            <el-row>
-              <el-col :xs="10" :sm="10" :md="10" :lg="10" :xl="10"  >
-                <p class="health">运行事件：<span></span></p>
-              </el-col>
-              <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6"  >
-                <p class="health">共享数：<span></span></p>
-              </el-col>
-              <el-col :xs="8" :sm="8" :md="8" :lg="8" :xl="8" >
-                <p class="health">配额数：<span></span></p>
-              </el-col>
-            </el-row>
+
           </el-card>
         </el-col>
         <el-col :xs="11" :sm="11" :md="22" :lg="11" :xl="11" :offset="1" style="margin-top: -2em;">
@@ -86,8 +69,29 @@
 
       data(){
           return{
-            now:'集群状态'
+            now:'集群状态',
+            percent:20,
+            usage:'',
+            freeuse:'',
+            alluse:'',
+            innum:'',
+            nodenum:'',
+            outnum:''
           }
+      },
+      mounted(){
+        var _this=this
+        this.$axios.get('').then(res=>{
+          _this.percent=20
+          _this.usage=res
+          _this.freeuse=res
+          _this.alluse=res
+          _this.innum=res
+          _this.nodenum=res
+          _this.outnum=res
+        }).catch(error=>{
+          console.log(error)
+        })
       },
       methods:{
           draw_cpu(){

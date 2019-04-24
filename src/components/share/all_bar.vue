@@ -4,7 +4,7 @@
           <el-row style="border-bottom: 1px solid white; " class="hidden-sm-and-down">
             <el-col :space="6" :offset="9"><router-link :to="{name:'index'}"><img src="../../../static/images/radar.png" id="image" ></router-link></el-col>
           </el-row>
-          <el-menu class="el-menu-vertical-demo" :collapse="isCollapse" background-color="#299D83" text-color="#fff" style="margin-top: 1em" @select="handleSelect">
+          <el-menu class="el-menu-vertical-demo" :collapse="isCollapse" background-color="#299D83" text-color="#fff" style="margin-top: 1em" @select="handleSelect" :default-active="bar" >
             <el-submenu index="1">
               <template slot="title">
                 <i class="el-icon-ziyuanxhdpi iconfont"></i>
@@ -41,12 +41,37 @@
         name: "all_bar",
       data(){
           return{
-            isCollapse:false
+            isCollapse:false,
+            bar:''
           }
+      },
+      mounted(){
+          this.selectbar()
       },
       methods:{
         handleSelect(key, keyPath) {
           console.log(key, keyPath);
+        },
+        selectbar(){
+          let aaa = location.hash   // 获取到地址拦上#号后面的url地址
+          if(aaa == '#/system_sketch'){  // 是否包含，-1是包含，0不包含
+            this.bar = '1-1'
+          }
+          else if(aaa == '#/cluster_status'){  // 是否包含，-1是包含，0不包含
+            this.bar = '1-2'
+          }
+          else if (aaa == '#/node_manager' ) {  // 是否包含，-1是包含，0不包含
+            this.bar = '2'
+          }
+          else if (aaa == '#/user'){
+            this.bar = '3'
+          }
+          else if (aaa == '#/system_manager') {
+            this.bar = '4'
+          }
+          else if (aaa == '#/warnning') {
+            this.bar = '5'
+          }
         }
       }
     }
