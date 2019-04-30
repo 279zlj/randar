@@ -6,18 +6,21 @@
       <el-col :xs="22" :sm="22" :md="22" :lg="22" :xl="22" :offset="1" style="margin-top: -2em;">
         <el-row style="background-color: white;border-radius: .5em">
         <el-button type="primary" style="float: right;margin: 1em" round @click="addu()"><i class="el-icon-circle-plus"  style="font-size: small;"></i>添加</el-button>
+          <el-alert type="success" id="msg" :title="msg" effect="dark" show-icon style="position: absolute;display: none" center></el-alert>
         <el-table :data="user_data.slice((currpage - 1) * pagesize, currpage * pagesize)"  height="500" style="width: 100%;border-radius: .5em;padding: 1em">
+
           <!--<el-table-column type="selection" width="100"></el-table-column>-->
-          <el-table-column prop="group" label="组ID"></el-table-column>
-          <el-table-column prop="name" label="用户名"></el-table-column>
-          <el-table-column prop="detail" label="用户描述"></el-table-column>
-          <el-table-column prop="own" label="所属组名"></el-table-column>
+          <el-table-column prop="groupID" label="组ID"></el-table-column>
+          <el-table-column prop="groupname" label="用户名"></el-table-column>
+          <el-table-column prop="story" label="用户描述"></el-table-column>
+          <el-table-column prop="name" label="所属组名"></el-table-column>
           <el-table-column
             label="操作"
-            width="250">
+            width="300">
             <template slot-scope="scope">
               <!--<el-button type="text" size="small"><i class="el-icon-circle-plus"></i></el-button>-->
-              <el-button type="text" size="small" @click="modify(scope.row)"><el-tooltip class="item" effect="dark" content="修改" placement="bottom"><i class="el-icon-edit"></i></el-tooltip></el-button>
+              <el-button type="text" size="small" @click="modifypwd(scope.row)"><el-tooltip class="item" effect="dark" content="修改密码" placement="bottom"><i class="el-icon-goods"></i></el-tooltip></el-button>
+              <el-button type="text" size="small" @click="modify(scope.row)"><el-tooltip class="item" effect="dark" content="修改描述" placement="bottom"><i class="el-icon-edit"></i></el-tooltip></el-button>
               <el-button type="text" size="small" @click="udelete(scope.row)"><el-tooltip class="item" effect="dark" content="删除" placement="bottom"><i class="el-icon-error"></i></el-tooltip></el-button>
             </template>
           </el-table-column>
@@ -52,17 +55,34 @@
           </el-form-item>
         </el-form>
       </el-dialog>
-      <el-dialog title="用户修改" :visible.sync="modifyuser" width="30%">
-        <el-form ref="mform" :model="mform">
+      <el-dialog title="用户描述修改" :visible.sync="modifyuser" width="30%">
+        <el-form ref="formdata" :model="formdata" status-icon :rules="rules" label-width="100px" class="demo-ruleForm">
           <el-form-item label="用户名">
             <span>{{selectname}}</span>
           </el-form-item>
-          <el-form-item label="描述">
-            <el-input type="text" v-model="content"></el-input>
+          <el-form-item label="描述" prop="content">
+            <el-input type="text" v-model="formdata.content"></el-input>
           </el-form-item>
           <el-form-item class="dialog-footer">
             <el-button @click="modifyuser=false">取消</el-button>
             <el-button type="primary" @click="sendmodify()">确认</el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
+      <el-dialog title="用户密码修改" :visible.sync="modifypass" width="30%">
+        <el-form ref="formdata" :model="formdata" status-icon :rules="rules" label-width="100px" class="demo-ruleForm">
+          <el-form-item label="用户名">
+            <span>{{selectname}}</span>
+          </el-form-item>
+          <el-form-item label="密码" prop="pwd">
+            <el-input type="password" v-model="formdata.pwd" show-password></el-input>
+          </el-form-item>
+          <el-form-item label="确认密码" prop="surepwd">
+            <el-input type="password" v-model="formdata.surepwd" show-password></el-input>
+          </el-form-item>
+          <el-form-item class="dialog-footer">
+            <el-button @click="modifypass=false">取消</el-button>
+            <el-button type="primary" @click="sendpwd()">确认</el-button>
           </el-form-item>
         </el-form>
       </el-dialog>
@@ -121,16 +141,12 @@
         };
           return{
             now:'用户管理',
-            user_data:[{
-              group:'001',
-              name:'test',
-              detail:'one',
-              own:'111'
-            }],
+            user_data:[],
             pagesize: 5,
             currpage: 1,
             adduser:false,
             modifyuser:false,
+            modifypass:false,
             userdelete:false,
             selectname:'',
             formdata:{
@@ -153,22 +169,22 @@
                 { validator:validatcontent, trigger: 'blur'}
               ],
             },
-            mform:{
-
-            },
             chosse: [],
-            content:''
+            msg:''
           }
       },
       mounted(){
-        // var _this=this
-        // this.$axios.get('').then(res=>{
-        //   _this.user_data=res
-        // }).catch(error=>{
-        //   console.log(error)
-        // })
+        this.start()
       },
       methods:{
+          start(){
+            var _this=this
+            this.$axios.get(_this.host+'moniter/select/').then(res=>{
+              _this.user_data=res.data
+            }).catch(error=>{
+              console.log(error)
+            })
+          },
         handleCurrentChange(cpage) {
           this.currpage = cpage;
         },
@@ -183,8 +199,19 @@
           var Self = this;
           this.$refs[name].validate(function (valid) {
             if (valid) {
-              this.$axios.post('',JSON.stringify(Self.formdata)).then(res=>{
-                console.log(res)
+              Self.$axios.post(Self.host+'moniter/add/',JSON.stringify(Self.formdata)).then(res=>{
+                if (res.data=='OK'){
+                  Self.msg='操作成功'
+                }
+                else {
+                  Self.msf='操作失败'
+                }
+                Self.adduser=false
+                Self.start()
+                $('#msg').css('display', 'inline-flex')
+                setTimeout(function () {
+                  $('#msg').css('display', 'none')
+                }, 2000)
               }).catch(error=>{
                 console.log(error)
               })
@@ -204,10 +231,48 @@
           this.modifyuser=true
           this.selectname=row.name
         },
+        modifypwd(row){
+          this.modifypass=true
+          this.selectname=row.name
+        },
         sendmodify(){
           var _this=this
-          this.$axios.post('',{user:this.selectname,content:this.content}).then(res=>{
-            console.log(res)
+          this.$axios.post(_this.host+'moniter/modify/',{user:this.selectname,content:this.formdata.content,password:''}).then(res=>{
+            if (res.data=='OK') {
+              _this.msg='操作成功'
+            }
+            else {
+              _this.msg='操作失败'
+            }
+            _this.modifyuser=false
+            _this.start()
+            $('#msg').css('display', 'inline-flex')
+            setTimeout(function () {
+              $('#msg').css('display', 'none')
+            }, 2000)
+
+            _this.selectname=''
+            _this.content=''
+          }).catch(error=>{
+            console.log(error)
+          })
+        },
+        sendpwd(){
+          var _this=this
+          this.$axios.post(_this.host+'moniter/modify/',{user:this.selectname,content:'',password:this.formdata.pwd}).then(res=>{
+            if (res.data=='OK') {
+              _this.msg='操作成功'
+            }
+            else {
+              _this.msg='操作失败'
+            }
+            _this.modifypass=false
+            _this.start()
+            $('#msg').css('display', 'inline-flex')
+            setTimeout(function () {
+              $('#msg').css('display', 'none')
+            }, 2000)
+
             _this.selectname=''
             _this.content=''
           }).catch(error=>{
@@ -220,8 +285,20 @@
         },
         senddelete(){
           var _this=this
-          this.$axios.post('',{user:this.selectname}).then(res=>{
-            console.log(res)
+          this.$axios.post(_this.host+'moniter/delete/',{user:this.selectname}).then(res=>{
+            if (res.data=='OK'){
+              _this.msg='操作成功'
+            }
+            else {
+              _this.msg='操作失败'
+            }
+            _this.userdelete=false
+            _this.start()
+            $('#msg').css('display', 'inline-flex')
+            setTimeout(function () {
+              $('#msg').css('display', 'none')
+            }, 2000)
+
             _this.selectname=''
           }).catch(error=>{
             console.log(error)

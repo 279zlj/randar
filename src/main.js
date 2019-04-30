@@ -16,6 +16,7 @@ Vue.config.productionTip = false
 Vue.use(ElementUI)
 Vue.prototype.$Highcharts = Highcharts
 Vue.prototype.$axios = axios
+Vue.prototype.host = 'http://192.168.5.117:8000/'
 
 /* eslint-disable no-new */
 new Vue({

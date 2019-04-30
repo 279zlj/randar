@@ -50,16 +50,16 @@
             </el-col>
             <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" style="border-left: 1px solid darkgrey;padding: 1em;margin-bottom: 1em">
               <p class="health">集群容量</p>
-              <el-progress :text-inside="true" :stroke-width="18" :percentage="percent"></el-progress>
+              <el-progress :text-inside="true" :stroke-width="18" :percentage="disk_info.Clusterspace*100"></el-progress>
               <el-row >
                 <el-col :span="24">
-                  <p class="health">集群名称：Radar Bigdata</p>
+                  <p class="health">集群名称：{{disk_info.Clustername}}</p>
                 </el-col>
 
               </el-row>
               <el-row>
                 <el-col :span="18">
-                  <p class="health">节点数量：<span>{{nodenum}}</span></p>
+                  <p class="health">节点数量：<span>{{disk_info.nodesum}}</span></p>
                 </el-col>
                 <el-col :span="6">
                   <p class="health">FTP：关</p>
@@ -135,13 +135,14 @@
               <span>节点信息统计</span>
             </div>
             <el-table :data="node" style="width: 100%" height="200">
-              <el-table-column prop="node" label="节点名称" ></el-table-column>
+              <el-table-column prop="name" label="节点名称" ></el-table-column>
+              <el-table-column prop="IP" label="IP"></el-table-column>
               <el-table-column prop="status" label="状态" ></el-table-column>
-              <el-table-column prop="device" label="磁盘数" ></el-table-column>
-              <el-table-column prop="space" label="存储空间" ></el-table-column>
-              <el-table-column prop="free" label="可用空间（%）" ></el-table-column>
-              <el-table-column prop="cpu" label="CPU（%）" ></el-table-column>
-              <el-table-column prop="memory" label="内存（%）" ></el-table-column>
+              <el-table-column prop="information" label="磁盘数" ></el-table-column>
+              <el-table-column prop="Totalspace" label="存储空间" ></el-table-column>
+              <el-table-column prop="Availablespace" label="可用空间（%）" ></el-table-column>
+              <el-table-column prop="cpuuse" label="CPU（%）" ></el-table-column>
+              <el-table-column prop="menuse" label="内存（%）" ></el-table-column>
             </el-table>
           </el-card>
         </el-col>
@@ -178,7 +179,8 @@
             shutdown:false,
             logout:false,
             percent:50,
-            nodenum:1
+            nodenum:1,
+            disk_info:[]
           }
       },
       mounted(){
@@ -197,6 +199,14 @@
               _this.cluster(_this.line_data)
             }).catch(function (error) {
               console.log(error)
+            })
+            this.$axios.get(this.host+'cluster/information/').then(res=>{
+              _this.node=res.data
+            }).catch(error=>{
+              console.log(error)
+            })
+            this.$axios.get(this.host+'cluster/disk/').then(res=>{
+              _this.disk_info=res.data
             })
             // this.$axios.get('').then(res=>{
             //   _this.percent=50

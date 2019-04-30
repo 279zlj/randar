@@ -47,19 +47,39 @@ export default {
     }
   },
   mounted(){
+    this.start()
     this.keyupSubmit()
   },
   methods:{
+    start(){
+      this.$axios.get(this.host+'cluster/init/').then(res=>{
+        console.log(res)
+      }).catch(error=>{
+        console.log(error)
+      })
+    },
     login(){
-      if (this.user=='admin'&& this.pwd=='admin'){
-        sessionStorage.setItem('login','ok')
-        this.$router.push('index')
-      }
-      else{
-        this.tips='输入的账号或密码错误！'
-      }
+      // if (this.user=='admin'&& this.pwd=='admin'){
+      //   sessionStorage.setItem('login',this.user)
+      //   this.$router.push('index')
+      // }
+      // else{
+      //   this.tips='输入的账号或密码错误！'
+      // }
+      this.$axios.post(this.host+'monitor/login',{user:this.user,password:this.pwd}).then(res=>{
+        if (res.data.status=='OK'){
+          sessionStorage.setItem('login',this.user)
+          this.$router.push('index')
+        }
+        else {
+          this.tips='输入账号或者密码错误！'
+        }
+      })
     },
     keyupSubmit(){
+
+
+      fsGFSGHrf
       document.onkeydown=e=>{
         let _key=event.keyCode;
         var a =sessionStorage.getItem('login')

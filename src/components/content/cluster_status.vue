@@ -12,29 +12,29 @@
               <div class="line"></div>
             </el-col>
             <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12"  style="text-align: center;margin-bottom: 1em">
-              <el-progress type="circle" :percentage="percent" :stroke-width=15 style="margin: 2em 0 1em 0" :width="200" color="#299D83"></el-progress>
-              <p class="health">已用容量：<span>{{usage}}</span></p>
-              <p class="health">可用容量：<span>{{freeuse}}</span></p>
-              <p class="health">总容量：{{alluse}}</p>
+              <el-progress type="circle" :percentage="info.Clusterspace*100" :stroke-width=15 style="margin: 2em 0 1em 0" :width="200" color="#299D83"></el-progress>
+              <p class="health">已用容量：<span>{{info.used}}</span>GB</p>
+              <p class="health">可用容量：<span>{{info.Present}}</span>GB</p>
+              <p class="health">总容量：<span>{{info.Configured}}</span>GB</p>
             </el-col>
             <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6" >
               <div class="line"></div>
             </el-col>
             <el-row>
                 <el-col :xs="10" :sm="10" :md="10" :lg="10" :xl="10" >
-                  <p class="health"> 集群名称：<span>Radar Bigdata</span></p>
+                  <p class="health"> 集群名称：<span>{{info.clustername}}</span></p>
                 </el-col>
               <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6" >
 
                 <p class="health">版本：<span>V1.01</span></p>
               </el-col>
               <el-col :xs="8" :sm="8" :md="8" :lg="8" :xl="8" >
-                <p class="health">在线节点数：<span>{{innum}}</span></p>
+                <p class="health">在线节点数：<span>{{info.onlinenode}}</span></p>
               </el-col>
             </el-row>
             <el-row>
               <el-col :xs="10" :sm="10" :md="10" :lg="10" :xl="10"  >
-                <p class="health">节点数量：<span>{{nodenum}}</span></p>
+                <p class="health">节点数量：<span>{{info.node}}</span></p>
               </el-col>
 
               <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6">
@@ -42,7 +42,7 @@
               </el-col>
               <el-col :xs="8" :sm="8" :md="8" :lg="8" :xl="8"  >
 
-                <p class="health">离线节点数：<span>{{outnum}}</span></p>
+                <p class="health">离线节点数：<span>{{info.offlinenode}}</span></p>
               </el-col>
             </el-row>
 
@@ -71,28 +71,14 @@
           return{
             now:'集群状态',
             percent:20,
-            usage:'',
-            freeuse:'',
-            alluse:'',
-            innum:'',
-            nodenum:'',
-            outnum:''
+            info:[],
+            outnum:'',
+            idisk:[],
+            odisk:[],
+            disktime:[]
           }
       },
-      mounted(){
-        var _this=this
-        this.$axios.get('').then(res=>{
-          _this.percent=20
-          _this.usage=res
-          _this.freeuse=res
-          _this.alluse=res
-          _this.innum=res
-          _this.nodenum=res
-          _this.outnum=res
-        }).catch(error=>{
-          console.log(error)
-        })
-      },
+
       methods:{
           draw_cpu(){
             this.$Highcharts.chart('cpu', {
@@ -227,32 +213,51 @@
             }
           });
         },
-        draw_disk(){
+        draw_disk(read,write,time){
             this.$Highcharts.chart('disk', {
               title: {
                 text: '磁盘读写速度KB/s',
                 align:'left'
+              },
+              events:{
+                load:function () {
+                  var _this=this
+                  var loaddata=function () {
+                    this.$axios.get(_this.host+'moniter/disk/').then(res=>{
+                      _this.percent=20
+                      _this.idisk.push(res.data.read)
+                      _this.odisk.push(res.data.write)
+                      _this.disktime.push(res.data.data)
+                      // console.log(_this.idisk)
+                      // _this.usage=res
+                      // _this.freeuse=res
+                      // _this.alluse=res
+                      // _this.innum=res
+                      // _this.nodenum=res
+                      // _this.outnum=res
+                    }).catch(error=>{
+                      console.log(error)
+                    })
+                  };
+                  loaddata();
+                  setInterval(loaddata,5000)
+                }
               },
               yAxis: {
                 title: {
                   text: 'KB/s'
                 }
               },
-
-              plotOptions: {
-                series: {
-                  label: {
-                    connectorAllowed: false
-                  },
-                  pointStart: 2010
-                }
+              xAxis: {
+                tickInterval: 5,
+                categories:time
               },
               series: [{
                 name: '读速度',
-                data: [43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175]
+                data: read
               }, {
                 name: '写速度',
-                data: [24916, 24064, 29742, 29851, 32490, 30282, 38121, 40434]
+                data: write
               }],
               responsive: {
                 rules: [{
@@ -269,12 +274,45 @@
                 }]
               }
             });
+        },
+        getdata(){
+          var _this=this
+            this.$axios.get(_this.host+'moniter/disk/').then(res=>{
+              _this.percent=20
+              _this.idisk.push(res.data.read)
+              _this.odisk.push(res.data.write)
+              _this.disktime.push(res.data.data)
+              // console.log(_this.idisk)
+              // _this.usage=res
+              // _this.freeuse=res
+              // _this.alluse=res
+              // _this.innum=res
+              // _this.nodenum=res
+              // _this.outnum=res
+            }).catch(error=>{
+              console.log(error)
+            })
+        },
+        start(){
+            var _this=this
+            this.$axios.get(_this.host+'moniter/cltselect/').then(res=>{
+              _this.info=res.data
+            }).catch(error=>{
+              console.log(error)
+            })
         }
       },
       mounted(){
+          // var _this=this
+          // setInterval(function () {
+          //   _this.getdata()
+          //
+          //   _this.draw_disk(_this.idisk,_this.odisk,_this.disktime)
+          // },5000)
+        this.start()
         this.draw_cpu()
         this.draw_mom()
-        this.draw_disk()
+        this.draw_disk(this.idisk,this.odisk,this.disktime)
       }
     }
 </script>

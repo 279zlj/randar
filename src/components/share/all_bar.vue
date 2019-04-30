@@ -15,10 +15,10 @@
                 <router-link :to="{name:'cluster_status'}"><el-menu-item index="1-2">集群状态</el-menu-item></router-link>
               </el-menu-item-group>
             </el-submenu>
-            <router-link :to="{name:'node_manager'}"><el-menu-item index="2">
-              <i class="el-icon-jiedian iconfont"></i>
-              <span slot="title">节点管理</span>
-            </el-menu-item></router-link>
+            <!--<router-link :to="{name:'node_manager'}"><el-menu-item index="2">-->
+              <!--<i class="el-icon-jiedian iconfont"></i>-->
+              <!--<span slot="title">节点管理</span>-->
+            <!--</el-menu-item></router-link>-->
             <router-link :to="{name:'user'}"><el-menu-item index="3">
               <i class="el-icon-user-s iconfont"></i>
               <span slot="title">用户管理</span>
@@ -54,15 +54,15 @@
         },
         selectbar(){
           let aaa = location.hash   // 获取到地址拦上#号后面的url地址
-          if(aaa == '#/system_sketch'){  // 是否包含，-1是包含，0不包含
+          if(aaa == '#/system_sketch'){
             this.bar = '1-1'
           }
-          else if(aaa == '#/cluster_status'){  // 是否包含，-1是包含，0不包含
+          else if(aaa == '#/cluster_status'){
             this.bar = '1-2'
           }
-          else if (aaa == '#/node_manager' ) {  // 是否包含，-1是包含，0不包含
-            this.bar = '2'
-          }
+          // else if (aaa == '#/node_manager' ) {
+          //   this.bar = '2'
+          // }
           else if (aaa == '#/user'){
             this.bar = '3'
           }
