@@ -52,10 +52,11 @@ export default {
   },
   methods:{
     start(){
-      this.$axios.get(this.host+'cluster/init/').then(res=>{
-        console.log(res)
+      this.$axios.get(this.host+'cluster/init').then(res=>{
+        // console.log(res)
       }).catch(error=>{
         console.log(error)
+        JSON.stringify()
       })
     },
     login(){
@@ -70,6 +71,7 @@ export default {
         if (res.data.status=='OK'){
           sessionStorage.setItem('login',this.user)
           this.$router.push('index')
+
         }
         else {
           this.tips='输入账号或者密码错误！'

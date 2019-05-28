@@ -32,7 +32,7 @@
 
         </el-row>
         <el-row>
-          <div id="container" style="min-width: 100%; height: 330px; margin: 0 auto;margin-bottom: 1.5em">
+          <div id="container" style="width: 100%; height: 330px; margin: 0 auto;margin-bottom: 1.5em">
 
           </div>
         </el-row>
@@ -50,7 +50,7 @@
             </el-col>
             <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" style="border-left: 1px solid darkgrey;padding: 1em;margin-bottom: 1em">
               <p class="health">集群容量</p>
-              <el-progress :text-inside="true" :stroke-width="18" :percentage="disk_info.Clusterspace*100"></el-progress>
+              <el-progress :text-inside="true" :stroke-width="18" :percentage="percent"></el-progress>
               <el-row >
                 <el-col :span="24">
                   <p class="health">集群名称：{{disk_info.Clustername}}</p>
@@ -178,14 +178,40 @@
             node:[],
             shutdown:false,
             logout:false,
-            percent:50,
+            percent:0,
             nodenum:1,
-            disk_info:[]
+            disk_info:[],
+            time:[],
+            cpu:[],
+            memory:[],
+            idisk:[],
+            odisk:[],
+            disktime:[],
+            aaa:''
           }
       },
-      mounted(){
-          this.start()
+      computed: {
+        use() {
+          return this.$store.state.time, this.$store.state.cpu, this.$store.state.memory
+        },
 
+      },
+      mounted(){
+        this.cluster(this.$store.state.time,this.$store.state.cpu,this.$store.state.memory)
+          this.time=this.$store.state.time
+          this.cpu=this.$store.state.cpu
+          this.memory=this.$store.state.memory
+          var _this=this
+          _this.aaa=setInterval(function () {
+            _this.start()
+
+          },10000)
+
+
+      },
+      destroyed(){
+        var _this=this
+        clearInterval(_this.aaa)
       },
       methods:{
         out(){
@@ -193,113 +219,106 @@
           this.$router.push('/')
         },
           start(){
-            var _this=this
-            this.$axios.get('https://cdn.jsdelivr.net/gh/highcharts/highcharts@v7.0.0/samples/data/usdeur.json').then(function (res) {
+
+
+              var _this=this
+            this.$axios.get(this.host+'monitor/use').then(function (res) {
               _this.line_data=res.data
-              _this.cluster(_this.line_data)
+              _this.time.push(res.data.data)
+              _this.cpu.push(res.data.cpuuse)
+              _this.memory.push(res.data.menuse)
+              _this.$store.commit('use', {time: _this.time, cpu: _this.cpu, memory: _this.memory})
+              _this.cluster(_this.$store.state.time,_this.$store.state.cpu,_this.$store.state.memory)
             }).catch(function (error) {
               console.log(error)
             })
-            this.$axios.get(this.host+'cluster/information/').then(res=>{
+            this.$axios.get(this.host+'cluster/information').then(res=>{
               _this.node=res.data
             }).catch(error=>{
               console.log(error)
             })
-            this.$axios.get(this.host+'cluster/disk/').then(res=>{
+            this.$axios.get(this.host+'cluster/disk').then(res=>{
               _this.disk_info=res.data
+              _this.percent=_this.disk_info.Clusterspace*100
             })
+            this.$axios.get(_this.host+'monitor/disk').then(res=>{
+
+                _this.idisk.push(res.data.read)
+                _this.odisk.push(res.data.write)
+                _this.disktime.push(res.data.data)
+                _this.$store.commit('disk', {disktime:_this.disktime, idisk: _this.idisk, odisk: _this.odisk})
+            }).catch(error=>{
+              console.log(error)
+            })
+
+
             // this.$axios.get('').then(res=>{
             //   _this.percent=50
             //   _this.nodenum=1
             //   _this.node=res.data
             // })
           },
-        cluster(data){
+        cluster(time,cpu,memory){
 
-          this.$Highcharts.chart('container', {
-            chart: {
-              zoomType: 'x',
-              backgroundColor: 'rgba(0,0,0,0)',
-            },
-            title: {
-              text: '(%)',
-              align:'left',
-              style: {
+          var mychart = this.$echarts.init(document.getElementById('container'))
 
-                color: '#FFF'
-              }
+          var option ={
+            color: ['#67C23A', '#F56C6C'],
+
+            tooltip: {
+              trigger: 'axis'
             },
-            xAxis: {
-              type: 'datetime',
-              labels: {
-                style: {
-                  color: '#FFF',//颜色
-                  fontSize:'14px'  //字体
-                }
-              },
-              lineColor: "#FFF",
-            },
-            yAxis: {
-              title: {
-                text: '百分比',
-                style:{
-                  color:'#FFF'
-                }
-              },
-              labels: {
-                style: {
-                  color: '#FFF',//颜色
-                  fontSize:'14px'  //字体
+            xAxis: [{
+              data: time,
+              type : 'category',
+              boundaryGap : false,
+              "axisLine": {
+                lineStyle: {
+                  color: 'white'
                 }
               },
             },
-            legend: {
-              enabled:true,
-              data: ['CPU', '内存'],
-              align: 'right',
-              verticalAlign: 'top',
-              itemStyle:{
-                color:'#FFF'
-              }
-            },
-            plotOptions: {
-              area: {
-                fillColor: {
-                  linearGradient: {
-                    x1: 0,
-                    y1: 0,
-                    x2: 0,
-                    y2: 1
-                  },
-                  stops: [
-                    [0, this.$Highcharts.getOptions().colors[3]],
-                    [1, this.$Highcharts.Color(this.$Highcharts.getOptions().colors[3]).setOpacity(0).get('rgba')]
-                  ]
-                },
-                marker: {
-                  radius: 2
-                },
-                lineWidth: 1,
-                states: {
-                  hover: {
-                    lineWidth: 1
-                  }
-                },
-                threshold: null
-              }
-            },
-
+            ],
+            yAxis: [{
+              name:'(%)',
+              max: 100,
+              "axisLine": {
+                lineStyle: {
+                  color: 'white'
+                }
+              },
+              splitLine: {show: false}
+            }],
             series: [{
-              type: 'area',
               name: 'CPU',
-              data: data
+              type: 'line',
+              showSymbol: false,
+              data: cpu,
+              itemStyle : {
+                normal : {
+                  lineStyle:{
+                    color:'#67C23A',
+                    width:5
+                  }
+                }
+              },
             },
               {
-                type: 'area',
-                name: '内存',
-                data: data
+                name: 'Memory',
+                type: 'line',
+                showSymbol: false,
+                data: memory,
+                itemStyle : {
+                  normal : {
+                    lineStyle:{
+                      color:'#F56C6C',
+                      width:5
+                    }
+                  }
+                },
               }]
-          });
+          }
+          mychart.setOption(option)
         }
         }
 

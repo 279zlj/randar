@@ -195,6 +195,7 @@
           name:'',
           cluster_ip:'',
           node_num:'',
+          visiable:false,
           ruleForm2: {
             cluster_name:'',
             // ipaddress: '',
@@ -260,12 +261,15 @@
           this.$refs[formName].validate(function (valid) {
             if (valid) {
               if (Self.who=='network'){
-                Self.$axios.post(Self.host+'moniter/networkupdata/',{ip:Self.network.IP,gw:Self.ruleForm2.gateway,fdns:Self.ruleForm2.fdns,sdns:Self.ruleForm2.sdns}).then(res=>{
-                  if (res.data=='OK'){
+                Self.$axios.post(Self.host+'monitor/networkupdata',{ip:Self.network.IP,gw:Self.ruleForm2.gateway,fdns:Self.ruleForm2.fdns,sdns:Self.ruleForm2.sdns}).then(res=>{
+                  console.log(res.data)
+                  if (res.data.status=='OK'){
                     $('#tooltip').css({display:'table'})
                     setTimeout(function () {
                       $('#tooltip').css({display:'none'})
                     },3000)
+
+
                   }
                   else {
                     $('#errortip').css({display:'table'})
@@ -279,12 +283,14 @@
                 })
               }
               else if(Self.who=='cluster'){
-                Self.$axios.post(Self.host+'moniter/cltupdata/',{content:Self.ruleForm2.content,name:Self.ruleForm2.cluster_name,old:Self.cluster.clustername}).then(res=>{
-                  if (res.data=='OK'){
+                Self.$axios.post(Self.host+'monitor/cltupdata',{content:Self.ruleForm2.content,name:Self.ruleForm2.cluster_name,old:Self.cluster.clustername}).then(res=>{
+                  console.log(res.data)
+                  if (res.data.status=='OK'){
                     $('#tooltip').css({display:'table'})
                     setTimeout(function () {
                       $('#tooltip').css({display:'none'})
                     },3000)
+
                   }
                   else {
                     $('#errortip').css({display:'table'})
@@ -299,7 +305,8 @@
               }
               else if (Self.who=='password'){
                 Self.$axios.post('',{name:Self.ruleForm2.content,pwd:Self.ruleForm2.pwd,newpwd:Self.ruleForm2.newpwd}).then(res=>{
-                  if (res.data=='OK'){
+                  console.log(res.data)
+                  if (res.data.status=='OK'){
                     $('#tooltip').css({display:'table'})
                     setTimeout(function () {
                       $('#tooltip').css({display:'none'})
@@ -319,7 +326,7 @@
 
             }
           });
-
+          Self.$emit('change_content',Self.visiable)
         },
 
         resetform(formName) {

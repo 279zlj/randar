@@ -50,7 +50,7 @@
       },
       methods:{
         handleSelect(key, keyPath) {
-          console.log(key, keyPath);
+          // console.log(key, keyPath);
         },
         selectbar(){
           let aaa = location.hash   // 获取到地址拦上#号后面的url地址

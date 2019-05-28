@@ -179,7 +179,7 @@
       methods:{
           start(){
             var _this=this
-            this.$axios.get(_this.host+'moniter/select/').then(res=>{
+            this.$axios.get(_this.host+'monitor/select').then(res=>{
               _this.user_data=res.data
             }).catch(error=>{
               console.log(error)
@@ -199,8 +199,8 @@
           var Self = this;
           this.$refs[name].validate(function (valid) {
             if (valid) {
-              Self.$axios.post(Self.host+'moniter/add/',JSON.stringify(Self.formdata)).then(res=>{
-                if (res.data=='OK'){
+              Self.$axios.post(Self.host+'monitor/add',JSON.stringify(Self.formdata)).then(res=>{
+                if (res.data.status=='OK'){
                   Self.msg='操作成功'
                 }
                 else {
@@ -237,7 +237,7 @@
         },
         sendmodify(){
           var _this=this
-          this.$axios.post(_this.host+'moniter/modify/',{user:this.selectname,content:this.formdata.content,password:''}).then(res=>{
+          this.$axios.post(_this.host+'monitor/modify',{user:this.selectname,content:this.formdata.content,password:''}).then(res=>{
             if (res.data=='OK') {
               _this.msg='操作成功'
             }
@@ -259,8 +259,8 @@
         },
         sendpwd(){
           var _this=this
-          this.$axios.post(_this.host+'moniter/modify/',{user:this.selectname,content:'',password:this.formdata.pwd}).then(res=>{
-            if (res.data=='OK') {
+          this.$axios.post(_this.host+'monitor/modify',{user:this.selectname,content:'',password:this.formdata.pwd}).then(res=>{
+            if (res.data.status=='OK') {
               _this.msg='操作成功'
             }
             else {
@@ -285,8 +285,8 @@
         },
         senddelete(){
           var _this=this
-          this.$axios.post(_this.host+'moniter/delete/',{user:this.selectname}).then(res=>{
-            if (res.data=='OK'){
+          this.$axios.post(_this.host+'monitor/delete',{user:this.selectname}).then(res=>{
+            if (res.data.status=='OK'){
               _this.msg='操作成功'
             }
             else {

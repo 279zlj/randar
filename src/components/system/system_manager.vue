@@ -3,7 +3,7 @@
 
       <el-row>
         <top_bar :who="now"></top_bar>
-        <el-col :xs="10" :sm="10" :md="10" :lg="10" :xl="10" :offset="1" style="margin-top: -2em;" >
+        <el-col :xs="10" :sm="10" :md="10" :lg="10" :xl="10" :offset="1" style="margin-top: -2em;" v-if="isalive">
           <el-card class="box-card" shadow="always" style="height: 35em;overflow-y: scroll">
 
             <el-row class="uint-color" @click.native="changesetting('cluster')">
@@ -48,7 +48,7 @@
           </el-card>
         </el-col>
         <el-col :xs="10" :sm="10" :md="10" :lg="10" :xl="10" :offset="1" style="margin-top: -2em;" >
-          <Setting_block :who="setting_what"  :title="setting_title" :cluster="cluster_info" :network="net_info"></Setting_block>
+          <Setting_block :who="setting_what"  :title="setting_title" :cluster="cluster_info" :network="net_info" v-on:change_content="change_content($event)"></Setting_block>
           <!--<Cluster_setting v-if="setting_what=='cluster'"></Cluster_setting>-->
         </el-col>
       </el-row>
@@ -70,7 +70,8 @@
             setting_title:'',
             cluster_info:[],
             net_info:[],
-            manager:''
+            manager:'',
+            isalive:true
           }
       },
       mounted(){
@@ -81,18 +82,24 @@
     methods:{
       start(){
         var _this=this
-        this.$axios.get(_this.host+'moniter/cltselect/').then(res=>{
+        this.$axios.get(_this.host+'monitor/cltselect').then(res=>{
           _this.cluster_info=res.data
           // sessionStorage.setItem('cluster_info',JSON.stringify(res.data))
         }).catch(error=>{
           console.log(error)
         })
-        this.$axios.get(_this.host+'moniter/selectnetwork/').then(res=>{
+        this.$axios.get(_this.host+'monitor/selectnetwork').then(res=>{
           _this.net_info=res.data
           // sessionStorage.setItem('net_info',JSON.stringify(res.data))
         }).catch(error=>{
           console.log(error)
         })
+      },
+      change_content(val){
+        console.log(val)
+        this.isalive=val
+        this.start()
+        this.isalive=!val
       },
       changesetting(name){
         this.setting_what=name
@@ -101,7 +108,7 @@
         }
         else if (name=='cluster'){
           this.setting_title='集群管理'
-        } 
+        }
         else if (name=='password'){
           this.setting_title='密码管理'
         }

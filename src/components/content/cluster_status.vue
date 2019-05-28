@@ -12,7 +12,7 @@
               <div class="line"></div>
             </el-col>
             <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12"  style="text-align: center;margin-bottom: 1em">
-              <el-progress type="circle" :percentage="info.Clusterspace*100" :stroke-width=15 style="margin: 2em 0 1em 0" :width="200" color="#299D83"></el-progress>
+              <el-progress type="circle" :percentage="percent" :stroke-width=15 style="margin: 2em 0 1em 0" :width="200" color="#299D83"></el-progress>
               <p class="health">已用容量：<span>{{info.used}}</span>GB</p>
               <p class="health">可用容量：<span>{{info.Present}}</span>GB</p>
               <p class="health">总容量：<span>{{info.Configured}}</span>GB</p>
@@ -49,13 +49,13 @@
           </el-card>
         </el-col>
         <el-col :xs="11" :sm="11" :md="22" :lg="11" :xl="11" :offset="1" style="margin-top: -2em;">
-          <div id="cpu" style="width: 100%;height:250px;border-radius: .3em"></div>
+          <div id="cpu" class="charts"></div>
         </el-col>
         <el-col :xs="11" :sm="11" :md="22" :lg="11" :xl="11" :offset="1" style="margin-top: 1em">
-          <div id="mom" style="width: 100%;height:250px;border-radius: .3em"></div>
+          <div id="mom" class="charts"></div>
         </el-col>
         <el-col :xs="11" :sm="11" :md="22" :lg="11" :xl="11" :offset="1" style="margin-top: 1em;margin-bottom: 1em">
-          <div id="disk" style="width: 100%;height:250px;border-radius: .3em"></div>
+          <div id="disk" class="charts"></div>
         </el-col>
       </el-row>
     </el-col>
@@ -70,249 +70,208 @@
       data(){
           return{
             now:'集群状态',
-            percent:20,
+            percent:0,
             info:[],
             outnum:'',
             idisk:[],
             odisk:[],
-            disktime:[]
+            disktime:[],
+            aaa:'',
+            time:[],
+            cpu:[],
+            memory:[]
           }
       },
-
+      computed: {
+        use() {
+          return this.$store.state.time, this.$store.state.cpu, this.$store.state.memory
+        },
+        disk() {
+          return this.$store.state.disktime, this.$store.state.idisk, this.$store.state.odisk
+        },
+      },
       methods:{
-          draw_cpu(){
-            this.$Highcharts.chart('cpu', {
-              chart: {
-                type: 'spline'
+          draw_cpu(time,data){
+            var cpu=this.$echarts.init(document.getElementById('cpu'))
+            var option={
+              color: ['#67C23A'],
+              xAxis: [{
+                data: time,
+                type : 'category',
+                boundaryGap : false,
               },
-              title: {
-                text: 'CPU使用率（%）',
-                align:'left'
-              },
-              colors:[
-                '#67C23A'
+
               ],
-              legend: {
-                enabled:false
-              },
-
-              xAxis: {
-                type: 'datetime',
-                labels: {
-                  overflow: 'justify'
-                },
-
-              },
-
-              yAxis: {
-                title: {
-                  text: '%'
-                },
-                min: 0,
-
-                minorGridLineWidth: 0,
-                gridLineWidth: 0,
-                alternateGridColor: null,
-              },
               tooltip: {
-                valueSuffix: ' m/s'
+                trigger: 'axis'
               },
-              plotOptions: {
-                spline: {
-                  lineWidth: 4,
-                  states: {
-                    hover: {
-                      lineWidth: 5
-                    }
-                  },
-                  marker: {
-                    enabled: false
-                  },
-                  pointInterval: 3600000, // one hour
-                  pointStart: Date.UTC(2009, 9, 6, 0, 0, 0)
-                }
-              },
-              series: [{
-                name: 'CPU使用率',
-                data: [4.3, 5.1, 4.3, 5.2, 5.4, 4.7, 3.5, 4.1, 5.6, 7.4, 6.9, 7.1,
-                  7.9, 7.9, 7.5, 6.7, 7.7, 7.7, 7.4, 7.0, 7.1, 5.8, 5.9, 7.4,
-                  8.2, 8.5, 9.4, 8.1, 10.9, 10.4, 10.9, 12.4, 12.1, 9.5, 7.5,
-                  7.1, 7.5, 8.1, 6.8, 3.4, 2.1, 1.9, 2.8, 2.9, 1.3, 4.4, 4.2,
-                  3.0, 3.0]
+              yAxis: [{
+                name:'(%)',
+                lineStyle:{
+                  color:'white'
+                },
+                max: 100,
+
+                splitLine: {show: false}
               }],
-              navigation: {
-                menuItemStyle: {
-                  fontSize: '10px'
-                }
-              }
-            });
-          },
-        draw_mom(){
-          this.$Highcharts.chart('mom', {
-            chart: {
-              type: 'spline'
-            },
-            colors:[
-              '#F56C6C'
-            ],
-            title: {
-              text: '内存使用率（%）',
-              align:'left'
-            },
-            legend: {
-              enabled:false
-            },
-            xAxis: {
-              type: 'datetime',
-              labels: {
-                overflow: 'justify'
-              },
-
-            },
-            yAxis: {
-              title: {
-                text: '%'
-              },
-              min: 0,
-
-              minorGridLineWidth: 0,
-              gridLineWidth: 0,
-              alternateGridColor: null,
-            },
-            tooltip: {
-              valueSuffix: ' m/s'
-            },
-            plotOptions: {
-              spline: {
-                lineWidth: 4,
-                states: {
-                  hover: {
-                    lineWidth: 5
+              series: [{
+                name:'CPU',
+                data: data,
+                type: 'line',
+                smooth: true,
+                areaStyle: {normal: {}},
+                itemStyle : {
+                  normal : {
+                    lineStyle:{
+                      color:'#67C23A',
+                      width:5
+                    }
                   }
                 },
-                marker: {
-                  enabled: false
-                },
-                pointInterval: 3600000, // one hour
-                pointStart: Date.UTC(2009, 9, 6, 0, 0, 0)
-              }
+              }]
+            };
+            cpu.setOption(option)
+          },
+        draw_mom(time,data){
+          var mom=this.$echarts.init(document.getElementById('mom'))
+          var option={
+            color: ['#F56C6C'],
+            xAxis:[{
+              data: time,
+              type : 'category',
+              boundaryGap : false,
             },
-            series: [{
-              name: '内存使用率',
+            ],
+            tooltip: {
+              trigger: 'axis'
+            },
+            yAxis: [{
+              name:'(%)',
+              lineStyle:{
+                color:'white'
+              },
+              max: 100,
 
-              data: [4.3, 5.1, 4.3, 5.2, 5.4, 4.7, 3.5, 4.1, 5.6, 7.4, 6.9, 7.1,
-                7.9, 7.9, 7.5, 6.7, 7.7, 7.7, 7.4, 7.0, 7.1, 5.8, 5.9, 7.4,
-                8.2, 8.5, 9.4, 8.1, 10.9, 10.4, 10.9, 12.4, 12.1, 9.5, 7.5,
-                7.1, 7.5, 8.1, 6.8, 3.4, 2.1, 1.9, 2.8, 2.9, 1.3, 4.4, 4.2,
-                3.0, 3.0]
+              splitLine: {show: false}
             }],
-            navigation: {
-              menuItemStyle: {
-                fontSize: '10px'
-              }
-            }
-          });
+            series: [{
+              name:'Memory',
+              data: data,
+              type: 'line',
+              smooth: true,
+              areaStyle: {normal: {}},
+              itemStyle : {
+                normal : {
+                  lineStyle:{
+                    color:'#F56C6C',
+                    width:5
+                  }
+                }
+              },
+            }]
+          };
+          mom.setOption(option)
         },
         draw_disk(read,write,time){
-            this.$Highcharts.chart('disk', {
-              title: {
-                text: '磁盘读写速度KB/s',
-                align:'left'
+
+          var disk=this.$echarts.init(document.getElementById('disk'))
+          var option={
+            color: ['#E6A23C', '#409EFF'],
+            xAxis: [{
+              data: time,
+              type : 'category',
+              boundaryGap : false,
+            }
+            ],
+            tooltip: {
+              trigger: 'axis'
+            },
+            yAxis: [{
+              name:'(KB/s)',
+              lineStyle:{
+                color:'white'
               },
-              events:{
-                load:function () {
-                  var _this=this
-                  var loaddata=function () {
-                    this.$axios.get(_this.host+'moniter/disk/').then(res=>{
-                      _this.percent=20
-                      _this.idisk.push(res.data.read)
-                      _this.odisk.push(res.data.write)
-                      _this.disktime.push(res.data.data)
-                      // console.log(_this.idisk)
-                      // _this.usage=res
-                      // _this.freeuse=res
-                      // _this.alluse=res
-                      // _this.innum=res
-                      // _this.nodenum=res
-                      // _this.outnum=res
-                    }).catch(error=>{
-                      console.log(error)
-                    })
-                  };
-                  loaddata();
-                  setInterval(loaddata,5000)
+              max: 300,
+
+              splitLine: {show: false}
+            }],
+            series: [{
+              name:'Write',
+              data: write,
+              type: 'line',
+              smooth: true,
+              areaStyle: {normal: {}},
+              itemStyle : {
+                normal : {
+                  lineStyle:{
+                    color:'#E6A23C',
+                    width:5
+                  }
                 }
               },
-              yAxis: {
-                title: {
-                  text: 'KB/s'
-                }
-              },
-              xAxis: {
-                tickInterval: 5,
-                categories:time
-              },
-              series: [{
-                name: '读速度',
-                data: read
-              }, {
-                name: '写速度',
-                data: write
-              }],
-              responsive: {
-                rules: [{
-                  condition: {
-                    maxWidth: 500
-                  },
-                  chartOptions: {
-                    legend: {
-                      layout: 'horizontal',
-                      align: 'center',
-                      verticalAlign: 'bottom'
+            },
+              {
+                name:'Read',
+                data:read,
+                type:'line',
+                smooth:true,
+                areaStyle: {normal: {}},
+                itemStyle : {
+                  normal : {
+                    lineStyle:{
+                      color:'#409EFF',
+                      width:5
                     }
                   }
-                }]
-              }
-            });
+                },
+              }]
+          };
+          disk.setOption(option)
         },
         getdata(){
           var _this=this
-            this.$axios.get(_this.host+'moniter/disk/').then(res=>{
-              _this.percent=20
+            this.$axios.get(_this.host+'monitor/disk').then(res=>{
               _this.idisk.push(res.data.read)
               _this.odisk.push(res.data.write)
               _this.disktime.push(res.data.data)
-              // console.log(_this.idisk)
-              // _this.usage=res
-              // _this.freeuse=res
-              // _this.alluse=res
-              // _this.innum=res
-              // _this.nodenum=res
-              // _this.outnum=res
+              _this.$store.commit('disk', {disktime:_this.disktime, idisk: _this.idisk, odisk: _this.odisk})
+              _this.draw_disk(_this.$store.state.idisk,_this.$store.state.odisk,_this.$store.state.disktime)
+              _this.draw_cpu(_this.$store.state.time,_this.$store.state.cpu)
+              _this.draw_mom(_this.$store.state.time,_this.$store.state.memory)
             }).catch(error=>{
               console.log(error)
             })
+
         },
         start(){
             var _this=this
-            this.$axios.get(_this.host+'moniter/cltselect/').then(res=>{
+            this.$axios.get(_this.host+'monitor/cltselect').then(res=>{
               _this.info=res.data
+              _this.percent=_this.info.Clusterspace*100
             }).catch(error=>{
               console.log(error)
             })
         }
       },
       mounted(){
-          // var _this=this
-          // setInterval(function () {
-          //   _this.getdata()
-          //
-          //   _this.draw_disk(_this.idisk,_this.odisk,_this.disktime)
-          // },5000)
         this.start()
-        this.draw_cpu()
-        this.draw_mom()
+        this.time=this.$store.state.time
+        this.cpu=this.$store.state.cpu
+        this.memory=this.$store.state.memory
+        this.disktime=this.$store.state.disktime
+        this.odisk=this.$store.state.odisk
+        this.idisk=this.$store.state.idisk
+        this.draw_cpu(this.time,this.cpu)
+        this.draw_mom(this.time,this.memory)
         this.draw_disk(this.idisk,this.odisk,this.disktime)
+        var _this=this
+        this.aaa=setInterval(function () {
+          _this.getdata()
+        },10000)
+      },
+      destroyed(){
+          var _this=this
+        clearInterval(_this.aaa)
       }
     }
 </script>
@@ -330,5 +289,9 @@
     vertical-align: middle;
     border-top:1px solid #299D83;
     margin: 100% 0;
+  }
+  .charts{
+    width: 100%;height:250px;border-radius: .3em;
+    background-color: white;
   }
 </style>
